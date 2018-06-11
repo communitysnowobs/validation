@@ -103,7 +103,8 @@ def fetchSNODAS(dem_dt, bindir=None, outdir=None, code=1036):
 
     # Open dataset using GDAL
     dataset = gdal.Open(snodas_fn)
-
+    if dataset is None:
+        return
     band = dataset.GetRasterBand(1)
     Array = band.ReadAsArray()
     NDV = band.GetNoDataValue()
@@ -123,6 +124,6 @@ def fetchSNODAS(dem_dt, bindir=None, outdir=None, code=1036):
     createTiff(OutputName, Array, driver, NDV, xsize, ysize, GeoT, Projection, DataType)
     # subprocess.call(['gdaldem', 'color-relief', '%s.tif' % OutputName, 'color_map.txt', '%s.tif' % VisName, '-alpha'])
 
-start_date = datetime(2016,8,1)
+start_date = datetime(2017,11,1)
 for date in (start_date + timedelta(n) for n in range(365)):
     fetchSNODAS(date, bindir=os.path.abspath("./bin"), outdir=os.path.abspath("./tiff"))
