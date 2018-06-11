@@ -121,8 +121,8 @@ def fetchSNODAS(dem_dt, bindir=None, outdir=None, code=1036):
         os.makedirs(os.path.dirname(OutputName))
 
     createTiff(OutputName, Array, driver, NDV, xsize, ysize, GeoT, Projection, DataType)
-    subprocess.call(['gdaldem', 'color-relief', '%s.tif' % OutputName, 'color_map.txt', '%s.tif' % VisName, '-alpha'])
+    # subprocess.call(['gdaldem', 'color-relief', '%s.tif' % OutputName, 'color_map.txt', '%s.tif' % VisName, '-alpha'])
 
-start_date = datetime(2010,1,16)
-for date in (start_date + timedelta(n) for n in range(30)):
+start_date = datetime(2016,8,1)
+for date in (start_date + timedelta(n) for n in range(365)):
     fetchSNODAS(date, bindir=os.path.abspath("./bin"), outdir=os.path.abspath("./tiff"))
