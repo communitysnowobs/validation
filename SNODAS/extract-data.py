@@ -87,14 +87,17 @@ def fetchSNODAS(dem_dt, bindir=None, outdir=None, code=1036):
                 outf.write(f.read())
                 outf.close()
             os.remove(tar_subfn_gz)
+    os.remove(snodas_tar_fn)
+
 
     #Need to delete 'Created by module comment' line from Hdr, can contain too many characters
-    bad_str = 'Created by module comment'
+    bad_str = 'module comment'
+    bad_str_2 = 'Color table'
     snodas_fn = tar_subfn
     f = open(snodas_fn)
     output = []
     for line in f:
-        if not bad_str in line:
+        if not bad_str in line and not bad_str_2 in line:
             output.append(line)
     f.close()
     f = open(snodas_fn, 'w')
@@ -124,6 +127,6 @@ def fetchSNODAS(dem_dt, bindir=None, outdir=None, code=1036):
     createTiff(OutputName, Array, driver, NDV, xsize, ysize, GeoT, Projection, DataType)
     # subprocess.call(['gdaldem', 'color-relief', '%s.tif' % OutputName, 'color_map.txt', '%s.tif' % VisName, '-alpha'])
 
-start_date = datetime(2017,11,1)
+start_date = datetime(2017,12,30)
 for date in (start_date + timedelta(n) for n in range(365)):
     fetchSNODAS(date, bindir=os.path.abspath("./bin"), outdir=os.path.abspath("./tiff"))

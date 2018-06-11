@@ -3,8 +3,10 @@ import time
 
 import pandas as pd
 import requests
+import config
 
 BASE_URL = 'https://api.mountainhub.com/timeline'
+BASE_ELEVATION_URL = 'https://maps.googleapis.com/maps/api/elevation/json'
 HEADER = { 'Accept-version': '1' }
 
 def removeEmptyParams(dict):
@@ -20,7 +22,7 @@ def timestampToDate(timestamp):
         return timestamp
     return datetime.fromtimestamp(timestamp / 1000)
 
-def prepare_bbox(box):
+def make_box(box):
     if box is None:
         return {}
     return {
@@ -31,7 +33,6 @@ def prepare_bbox(box):
     }
 
 def parse(record):
-
     obs = record['observation']
     actor = record['actor']
     details = obs.get('details', [{}])
@@ -48,8 +49,12 @@ def parse(record):
         'snow_depth' : float(snow_depth) if snow_depth is not None else None
     }
 
-def get_data(limit=100, start=None, end=None, box=None, filter=True):
+def parse_elevation(record):
+    return {
+        'elevation' : record['elevation']
+    }
 
+def snow_data(limit=100, start=None, end=None, box=None, filter=True):
     # Build API request
     params = removeEmptyParams({
         'publisher': 'all',
@@ -57,7 +62,7 @@ def get_data(limit=100, start=None, end=None, box=None, filter=True):
         'limit': limit,
         'since': dateToTimestamp(start),
         'before': dateToTimestamp(end),
-        **prepare_bbox(box)
+        **make_box(box)
     })
 
     # Make request
@@ -71,8 +76,30 @@ def get_data(limit=100, start=None, end=None, box=None, filter=True):
     records = data['results']
     parsed = [ parse(record) for record in records ]
 
-    # Convert to dataframe and drop invalid results
+    # Convert to dataframe and drop invalid results if necessary
     df = pd.DataFrame.from_records(parsed)
     if filter:
         df = df.dropna()
     return df
+
+def get_el_data(points=[]):
+    params = {
+        'locations': "|".join([",".join([str(point[0]), str(point[1])]) for point in points]),
+        'key': config.GOOGLE_API_KEY
+    }
+    response = requests.get(BASE_ELEVATION_URL, params=params)
+    data = response.json()
+
+    if 'results' not in data:
+        raise ValueError(data)
+
+    records = data['results']
+    parsed = [{ 'lat' : point[0], 'long' : point[1], **parse_elevation(record)} for point, record in zip(points, records)]
+    df = pd.DataFrame.from_records(parsed)
+    return df
+
+def merge_el_data(df):
+
+    points = list(zip(df['lat'], df['long']))
+    elevations = get_el_data(points)
+    return pd.merge(df, elevations)
