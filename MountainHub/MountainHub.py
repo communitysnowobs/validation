@@ -32,7 +32,7 @@ def make_box(box):
         'south_west_lng': box['xmin']
     }
 
-def parse(record):
+def parse_snow(record):
     obs = record['observation']
     actor = record['actor']
     details = obs.get('details', [{}])
@@ -74,7 +74,7 @@ def snow_data(limit=100, start=None, end=None, box=None, filter=True):
 
     # Parse request
     records = data['results']
-    parsed = [ parse(record) for record in records ]
+    parsed = [ parse_snow(record) for record in records ]
 
     # Convert to dataframe and drop invalid results if necessary
     df = pd.DataFrame.from_records(parsed)
@@ -82,7 +82,7 @@ def snow_data(limit=100, start=None, end=None, box=None, filter=True):
         df = df.dropna()
     return df
 
-def get_el_data(points=[]):
+def el_data(points=[]):
     params = {
         'locations': "|".join([",".join([str(point[0]), str(point[1])]) for point in points]),
         'key': config.GOOGLE_API_KEY
@@ -101,5 +101,5 @@ def get_el_data(points=[]):
 def merge_el_data(df):
 
     points = list(zip(df['lat'], df['long']))
-    elevations = get_el_data(points)
+    elevations = el_data(points)
     return pd.merge(df, elevations)
