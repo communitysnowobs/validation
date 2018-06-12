@@ -1,5 +1,4 @@
-/SNODAS/bin
-/SNODAS/tiff
+/SNODAS/out
 
 *.DS_Store
 *.ipynb_checkpoints
