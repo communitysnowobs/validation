@@ -1,12 +1,22 @@
+import re
+import os
 import tarfile
-import urllib.request
-from io import BytesIO
-from datetime import datetime, timedelta
 import gzip
-import pprint
+import urllib.request
+from datetime import datetime, timedelta
+from io import BytesIO
 from osgeo import gdal, gdal_array, osr
-import numpy as np
 
+import numpy as np
+import xarray as xr
+
+def dateFromFile(name):
+    match = re.search("\d{8}", name)
+    date = datetime.strptime(match.group(), '%Y%m%d')
+    return date
+
+def dataArrayFromFile(name):
+    return xr.open_rasterio(name)
 
 def get_metadata(source):
 
