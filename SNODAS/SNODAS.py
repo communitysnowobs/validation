@@ -11,15 +11,21 @@ import numpy as np
 import xarray as xr
 
 def dateFromFile(name):
+    """Get date from filename.
+
+    Keword arguments:
+    name -- File name to extract date from
+    """
     match = re.search("\d{8}", name)
     date = datetime.strptime(match.group(), '%Y%m%d')
     return date
 
-def dataArrayFromFile(name):
-    return xr.open_rasterio(name)
-
 def get_metadata(source):
+    """Get metadata from GDAL dataset.
 
+    Keword arguments:
+    source -- GDAL dataset to retrieve metadata for
+    """
     ndv = source.GetRasterBand(1).GetNoDataValue()
     width = source.RasterXSize
     height = source.RasterYSize
@@ -31,18 +37,33 @@ def get_metadata(source):
     return ndv, width, height, transform, projection, dtype
 
 def date_to_url(date):
+    """Get url of SNODAS data for given date.
+
+    Keword arguments:
+    date -- Date to fetch SNODAS data for
+    """
     if date >= datetime(2003,9,30) and date < datetime(2010,1,1):
         return date.strftime('ftp://sidads.colorado.edu/DATASETS/NOAA/G02158/masked/%Y/%m_%b/SNODAS_%Y%m%d.tar')
     elif date >= datetime(2010,1,1):
         return date.strftime('ftp://sidads.colorado.edu/DATASETS/NOAA/G02158/unmasked/%Y/%m_%b/SNODAS_unmasked_%Y%m%d.tar')
 
 def date_to_gz_format(date):
+    """Get format string for gzipped SNODAS files for given date.
+
+    Keword arguments:
+    date -- Date to fetch SNODAS data for
+    """
     if date >= datetime(2003,9,30) and date < datetime(2010,1,1):
         return date.strftime('us_ssmv1%%itS__T0001TTNATS%Y%m%d05HP001.%%s.gz')
     elif date >= datetime(2010,1,1):
         return date.strftime('zz_ssmv1%%itS__T0001TTNATS%Y%m%d05HP001.%%s.gz')
 
 def url_to_io(url):
+    """Get raw bytes from url.
+
+    Keword arguments:
+    url -- URL to fetch data from
+    """
     stream = urllib.request.urlopen(url)
     bytes = BytesIO()
     while True:
@@ -56,13 +77,19 @@ def url_to_io(url):
     bytes.seek(0)
     return bytes
 
-def url_to_tar(url, mode = 'r'):
+def url_to_tar(url):
+    """Get tar object from url.
+
+    Keword arguments:
+    url -- URL of SNODAS data for specific date
+    """
     io = url_to_io(url)
-    tar = tarfile.open(fileobj = io, mode = mode)
+    tar = tarfile.open(fileobj = io, mode = 'r')
     return tar
 
 # Remove lines longer than 256 characters from header (GDAL requirement)
 def clean_header(hdr):
+    """Remove lines longer than 256 characters from header (GDAL requirement)."""
     new_hdr = BytesIO()
     for line in hdr:
         if len(line) <= 256:
@@ -76,6 +103,7 @@ def clean_header(hdr):
     return new_hdr
 
 def clean_tar_paths(paths, tar):
+    """Corrects paths of files in tar."""
     new_paths = []
     for path in paths:
         try:
@@ -86,6 +114,13 @@ def clean_tar_paths(paths, tar):
     return new_paths
 
 def tar_to_data(tar, gz_format, code=1036):
+    """Converts tar archive to GDAL dataset.
+
+    Keword arguments:
+    tar -- tar object
+    gz_format -- format for gzipped files in archive
+    code -- SNODAS product code (default 1036 [Snow Depth])
+    """
 
     extensions = ['dat', 'Hdr']
     # Untar and extract files
@@ -119,6 +154,13 @@ def tar_to_data(tar, gz_format, code=1036):
     return ds
 
 def save_ds(ds, path, driver):
+    """Save GDAL dataset using arbitrary driver.
+
+    Keword arguments:
+    ds -- GDAl dataset
+    path -- Location where file will be saved
+    driver -- Driver to use
+    """
 
     band = ds.GetRasterBand(1)
     bytes = band.ReadAsArray()
@@ -133,13 +175,25 @@ def save_ds(ds, path, driver):
     out_ds.GetRasterBand(1).SetNoDataValue(ndv)
 
 def save_tiff(ds, path):
+    """Save GDAL dataset as GeoTIFF file.
+
+    Keword arguments:
+    ds -- GDAl dataset
+    path -- Location where file will be saved
+    """
     save_ds(ds, path, 'GTiff')
 
 def save_netcdf(ds, path):
+    """Save GDAL dataset as NetCDF file.
+
+    Keword arguments:
+    ds -- GDAl dataset
+    path -- Location where file will be saved
+    """
     save_ds(ds, path, 'netCDF')
 
 def snodas_ds(date, code=1036):
-    """Get SNODAS data for specific date
+    """Get SNODAS data as GDAL dataset for specific date.
 
     Keyword arguments:
     date -- datetime object
