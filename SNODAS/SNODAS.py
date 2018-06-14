@@ -13,7 +13,7 @@ import xarray as xr
 def dateFromFile(name):
     """Get date from filename.
 
-    Keword arguments:
+    Keyword arguments:
     name -- File name to extract date from
     """
     match = re.search("\d{8}", name)
@@ -23,7 +23,7 @@ def dateFromFile(name):
 def get_metadata(source):
     """Get metadata from GDAL dataset.
 
-    Keword arguments:
+    Keyword arguments:
     source -- GDAL dataset to retrieve metadata for
     """
     ndv = source.GetRasterBand(1).GetNoDataValue()
@@ -39,7 +39,7 @@ def get_metadata(source):
 def date_to_url(date):
     """Get url of SNODAS data for given date.
 
-    Keword arguments:
+    Keyword arguments:
     date -- Date to fetch SNODAS data for
     """
     if date >= datetime(2003,9,30) and date < datetime(2010,1,1):
@@ -50,7 +50,7 @@ def date_to_url(date):
 def date_to_gz_format(date):
     """Get format string for gzipped SNODAS files for given date.
 
-    Keword arguments:
+    Keyword arguments:
     date -- Date to fetch SNODAS data for
     """
     if date >= datetime(2003,9,30) and date < datetime(2010,1,1):
@@ -61,7 +61,7 @@ def date_to_gz_format(date):
 def url_to_io(url):
     """Get raw bytes from url.
 
-    Keword arguments:
+    Keyword arguments:
     url -- URL to fetch data from
     """
     stream = urllib.request.urlopen(url)
@@ -80,7 +80,7 @@ def url_to_io(url):
 def url_to_tar(url):
     """Get tar object from url.
 
-    Keword arguments:
+    Keyword arguments:
     url -- URL of SNODAS data for specific date
     """
     io = url_to_io(url)
@@ -116,7 +116,7 @@ def clean_tar_paths(paths, tar):
 def tar_to_data(tar, gz_format, code=1036):
     """Converts tar archive to GDAL dataset.
 
-    Keword arguments:
+    Keyword arguments:
     tar -- tar object
     gz_format -- format for gzipped files in archive
     code -- SNODAS product code (default 1036 [Snow Depth])
@@ -156,7 +156,7 @@ def tar_to_data(tar, gz_format, code=1036):
 def save_ds(ds, path, driver):
     """Save GDAL dataset using arbitrary driver.
 
-    Keword arguments:
+    Keyword arguments:
     ds -- GDAl dataset
     path -- Location where file will be saved
     driver -- Driver to use
@@ -177,7 +177,7 @@ def save_ds(ds, path, driver):
 def save_tiff(ds, path):
     """Save GDAL dataset as GeoTIFF file.
 
-    Keword arguments:
+    Keyword arguments:
     ds -- GDAl dataset
     path -- Location where file will be saved
     """
@@ -186,7 +186,7 @@ def save_tiff(ds, path):
 def save_netcdf(ds, path):
     """Save GDAL dataset as NetCDF file.
 
-    Keword arguments:
+    Keyword arguments:
     ds -- GDAl dataset
     path -- Location where file will be saved
     """
