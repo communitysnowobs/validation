@@ -57,14 +57,12 @@ def url_to_io(url):
     return bytes
 
 def url_to_tar(url, mode = 'r'):
-    # Read to intermediate IO first (tar cannot read directly from stream)
     io = url_to_io(url)
     tar = tarfile.open(fileobj = io, mode = mode)
     return tar
 
 # Remove lines longer than 256 characters from header (GDAL requirement)
 def clean_header(hdr):
-
     new_hdr = BytesIO()
     for line in hdr:
         if len(line) <= 256:

@@ -9,6 +9,10 @@ BASE_URL = 'https://api.mountainhub.com/timeline'
 BASE_ELEVATION_URL = 'https://maps.googleapis.com/maps/api/elevation/json'
 HEADER = { 'Accept-version': '1' }
 
+def batches(list, size):
+    for i in range(0, len(list), size):
+        yield list[i:i + size]
+
 def removeEmptyParams(dict):
     return { k:v for k, v in dict.items() if v is not None }
 
@@ -46,7 +50,7 @@ def parse_snow(record):
         'lat' : obs['location'][1],
         'long' : obs['location'][0],
         'type' : obs['type'],
-        'snow_depth' : float(snow_depth) if snow_depth is not None else None
+        'snow_depth' : float(snow_depth) if (snow_depth is not None and snow_depth != 'undefined')else None
     }
 
 def parse_elevation(record):
