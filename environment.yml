@@ -1,0 +1,7 @@
+name: validation
+dependencies:
+  - numpy
+  - xarray
+  - pandas
+  - requests
+  - gdal
