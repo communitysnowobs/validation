@@ -1,8 +1,8 @@
-/SNODAS/out
-
+/data
 *.DS_Store
 *.ipynb_checkpoints
 __pycache__
 config.py
 .idea
 *.egg-info/
+out
