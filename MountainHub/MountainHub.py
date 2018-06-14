@@ -13,6 +13,12 @@ def batches(list, size):
     for i in range(0, len(list), size):
         yield list[i:i + size]
 
+def frange(start, end, stops):
+    stop = 0
+    while stop < stops:
+        yield (start + stop * (end - start) / (stops - 1))
+        stop += 1
+
 def removeEmptyParams(dict):
     return { k:v for k, v in dict.items() if v is not None }
 
@@ -87,20 +93,49 @@ def snow_data(limit=100, start=None, end=None, box=None, filter=True):
     return df
 
 def el_data(points=[]):
+    records = []
+    # Split into batches for API requests
+    for batch in batches(points, 256):
+        params = {
+            'locations': "|".join([",".join([str(point[0]), str(point[1])]) for point in points]),
+            'key': config.GOOGLE_API_KEY
+        }
+        response = requests.get(BASE_ELEVATION_URL, params=params)
+        data = response.json()
+
+        if 'results' not in data:
+            raise ValueError(data)
+
+        records.extend(data['results'])
+    parsed = [{ 'lat' : point[0], 'long' : point[1], **parse_elevation(record)} for point, record in zip(points, records)]
+    df = pd.DataFrame.from_records(parsed)
+    return df
+
+def average_elevation(box, grid_size = 16):
+    # Restrict grid size to fit in API request
+    grid_size = min(grid_size, 16)
+    points = []
+    for lat in frange(box['ymin'], box['ymax'], grid_size):
+        for long in frange(box['xmin'], box['xmax'], grid_size):
+            points.append((lat, long))
+
     params = {
-        'locations': "|".join([",".join([str(point[0]), str(point[1])]) for point in points]),
+        'locations': "|".join([",".join(['%.4f' % point[0], '%.4f' % point[1]]) for point in points]),
         'key': config.GOOGLE_API_KEY
     }
+    print(params)
     response = requests.get(BASE_ELEVATION_URL, params=params)
+    print(response.text)
     data = response.json()
 
     if 'results' not in data:
         raise ValueError(data)
 
     records = data['results']
-    parsed = [{ 'lat' : point[0], 'long' : point[1], **parse_elevation(record)} for point, record in zip(points, records)]
-    df = pd.DataFrame.from_records(parsed)
-    return df
+    elevations = [record['elevation'] for record in records]
+    print(sum(elevations) / len(elevations))
+    return sum(elevations) / len(elevations)
+
 
 def merge_el_data(df):
 
