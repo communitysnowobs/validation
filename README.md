@@ -13,3 +13,8 @@ This repo is used to stage scripts aimed at validating NASA Community Snow Obser
   ```
   source activate validation
   ```
+
+3. Setup validation package
+  ```
+  pip install -e .
+  ```
