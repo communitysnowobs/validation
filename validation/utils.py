@@ -2,8 +2,33 @@ import urllib.request
 import tarfile
 from io import BytesIO
 from osgeo import gdal, gdal_array, osr
+import re
+from datetime import datetime
 
 import numpy as np
+
+def batches(list, size):
+    """Splits list into batches of fixed size.
+
+    Keword arguments:
+    list -- List to split
+    size -- Batch size
+    """
+    for i in range(0, len(list), size):
+        yield list[i:i + size]
+
+def intervals(start, end, intervals):
+    """Generates series of evenly spaced intervals between two numbers.
+
+    Keyword arguments:
+    start -- Lower bound
+    end -- Upper bound
+    intervals -- Number of points to generate
+    """
+    stop = 0
+    while stop < stops:
+        yield (start + stop * (end - start) / (stops - 1))
+        stop += 1
 
 def date_from_file(name):
     """Get date from filename.

@@ -36,7 +36,7 @@ def snodas_file_format(date):
 
 
 # Remove lines longer than 256 characters from header (GDAL requirement)
-def clean_snodas_header(hdr):
+def clean_header(hdr):
     """Remove lines longer than 256 characters from header (GDAL requirement)."""
     new_hdr = BytesIO()
     for line in hdr:
@@ -50,7 +50,7 @@ def clean_snodas_header(hdr):
 
     return new_hdr
 
-def clean_snodas_paths(paths, tar):
+def clean_paths(paths, tar):
     """Corrects paths of files in tar."""
     new_paths = []
     for path in paths:
@@ -77,13 +77,13 @@ def tar_to_snodas(tar, gz_format, code=1036):
 
     # Some paths in tar file have ./ preceeding, some do not
     # Use clean_tar_paths to find and use correct paths
-    gz_paths = clean_snodas_paths(gz_paths, tar)
+    gz_paths = clean_paths(gz_paths, tar)
 
     gz_files = [tar.extractfile(path) for path in gz_paths]
     dat_file, hdr_file = [gzip.GzipFile(fileobj=file, mode='r') for file in gz_files]
 
     # Read data into buffers
-    hdr_file = clean_snodas_header(hdr_file)
+    hdr_file = clean_header(hdr_file)
     dat = dat_file.read()
     hdr = hdr_file.read()
 

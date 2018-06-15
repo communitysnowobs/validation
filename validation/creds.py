@@ -16,5 +16,14 @@ def set_credential(**kwargs):
     configfile = os.path.join(home_dir, '.csoconfig.json')
     if not os.path.exists(configfile):
         with open(configfile, 'w') as f:
-            f.write(json.dumps({'google_creds': google_creds}))
+            f.write(json.dumps({'google_key': google_creds}))
 
+def get_credential(key):
+    home_dir = os.environ.get('HOME')
+    configfile = os.path.join(home_dir, '.csoconfig.json')
+    if not os.path.exists(configfile):
+        return None
+    else:
+        data=open(configfile).read()
+        json_data = json.loads(data)
+        return json_data.get('google_key')
