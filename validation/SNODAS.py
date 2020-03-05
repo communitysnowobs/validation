@@ -70,7 +70,7 @@ def tar_to_snodas(tar, gz_format, code=1036):
     code -- SNODAS product code (default 1036 [Snow Depth])
     """
 
-    extensions = ['dat', 'Hdr']
+    extensions = ['dat', 'txt']
     # Untar and extract files
     gz_paths = [gz_format % (code, extension) for extension in extensions]
     vsi_paths = ['/vsimem/' + path[:-3] for path in gz_paths]
