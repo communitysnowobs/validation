@@ -1,7 +1,8 @@
-name: validation
+name: CSO-validation
 dependencies:
   - gdal
   - numpy
   - pandas
   - requests
   - xarray
+  - ipykernel
