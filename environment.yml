@@ -1,4 +1,6 @@
 name: CSO-validation
+channels:
+  - conda-forge
 dependencies:
   - gdal
   - numpy
@@ -6,3 +8,6 @@ dependencies:
   - requests
   - xarray
   - ipykernel
+  - matplotlib
+  - seaborn
+  - dask
