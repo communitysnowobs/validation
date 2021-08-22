@@ -5,4 +5,4 @@ from __future__ import (division,
                         print_function,
                         unicode_literals)
 
-__all__ = ['MountainHub', 'SNODAS']
+__all__ = ['SNODAS']
