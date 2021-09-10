@@ -62,12 +62,15 @@ def clean_paths(paths, tar):
     return new_paths
 
 def tar_to_snodas(tar, gz_format, code=1036):
-    """Converts tar archive to GDAL dataset.
+    """Converts snodas tar archive to xarray dataset.
 
     Keyword arguments:
     tar -- tar object
     gz_format -- format for gzipped files in archive
     code -- SNODAS product code (default 1036 [Snow Depth])
+
+    Returns:
+    xarray dataset
     """
 
     extensions = ['dat', 'txt']
@@ -90,7 +93,8 @@ def tar_to_snodas(tar, gz_format, code=1036):
     # Convert to GDAL Dataset
     gdal.FileFromMemBuffer(vsi_paths[0], dat)
     gdal.FileFromMemBuffer(vsi_paths[1], hdr)
-    ds = gdal.Open(vsi_paths[1])
+#    ds = gdal.Open(vsi_paths[1])
+    ds = xr.open_rasterio(vsi_paths[1])
 
     # Close / Unlink Virtual Files
     tar.close()
