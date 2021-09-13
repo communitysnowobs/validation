@@ -18,6 +18,7 @@ def el_data(points=[]):
             'locations': "|".join([",".join([str(point[0]), str(point[1])]) for point in points]),
             'key': creds.get_credential('google_key')
         }
+        print(params)
         response = requests.get(BASE_ELEVATION_URL, params=params)
         data = response.json()
 
@@ -76,6 +77,6 @@ def merge_el_data(df):
     Keyword arguments:
     df -- Dataframe of SNODAS data to add elevation data to
     """
-    points = list(zip(df['lat'], df['long']))
+    points = list(zip(df['latitude'], df['longitude']))
     elevations = el_data(points)
     return pd.merge(df, elevations)

@@ -11,3 +11,8 @@ dependencies:
   - matplotlib
   - seaborn
   - dask
+  - rasterio
+  - tqdm
+  - pip:
+    - git+https://github.com/communitysnowobs/mountainhub-api.git
+    - git+https://github.com/communitysnowobs/validation.git
