@@ -1,0 +1,7 @@
+# File Extensions
+*.json
+*.geojson
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
