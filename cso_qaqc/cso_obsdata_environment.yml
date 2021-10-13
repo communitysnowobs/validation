@@ -1,0 +1,28 @@
+name: cso_obsdata
+channels:  
+  - conda-forge
+  - defaults
+dependencies:
+  - python
+  - ipython
+  - ipykernel
+  - requests
+  - geopandas
+  - geojson
+  - xarray
+  - netcdf4
+  - dask
+  - zarr
+  - matplotlib
+  - seaborn
+  - cartopy
+  - folium
+  # pin branca to prevent "Make this notebook trusted" problem
+  - branca=0.3.1
+  - xlrd
+  - boto3
+  - s3fs
+  - fsspec<0.9
+  - pip
+  - pip:
+    - git+https://github.com/communitysnowobs/mountainhub-api.git
