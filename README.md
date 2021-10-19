@@ -2,6 +2,8 @@
 
 This repo is used to stage scripts aimed at validating NASA Community Snow Observations data against other reanalysis products.
 
+winter is great!
+
 ## SNODAS
 
 Useful resources:
